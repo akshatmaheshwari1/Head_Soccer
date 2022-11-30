@@ -3,6 +3,7 @@ from settings import Settings
 import sys
 import time
 from player import Player
+from soccerball import SoccerBall
 
 class HeadSoccer:
     def __init__(self):
@@ -29,12 +30,25 @@ class HeadSoccer:
         self.player1.x = 200
         self.player1.y = 600 - self.player1.rect.height
 
+        #draw player2
+        self.player2 = Player(2, pygame.image.load('Assets/player2.png'))
+        self.player2.x = 1000
+        self.player2.y = 600 - self.player2.rect.height
+
+        #draw ball
+        self.ball = SoccerBall()
+        self.ball.x = 600
+        self.ball.y = 100
+
     def run_game(self):
         clock = pygame.time.Clock()
         while True:
             self._check_events()
             self.player1.update()
+            self.player2.update()
+            self.ball.update()
             self.update_screen()
+            self.check_collision_with_player()
 
         clock.tick(60)
     def draw_background(self):
@@ -49,6 +63,8 @@ class HeadSoccer:
     def update_screen(self):
         self.draw_background()
         self.screen.blit(self.player1.image, self.player1.rect)
+        self.screen.blit(self.player2.image, self.player2.rect)
+        self.screen.blit(self.ball.image, self.ball.rect)
         pygame.display.flip()
 
     def _check_events(self):
@@ -56,6 +72,7 @@ class HeadSoccer:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
+                #player1
                 if event.key == pygame.K_RIGHT:
                     self.player1.moving_right = True
                 if event.key == pygame.K_LEFT:
@@ -63,10 +80,29 @@ class HeadSoccer:
                 if event.key == pygame.K_UP:
                     self.player1.jumping_frame = 80
                     self.player1.jump_count +=1
+                #player2
+                if event.key == pygame.K_d:
+                    self.player2.moving_right = True
+                if event.key == pygame.K_a:
+                    self.player2.moving_left = True
+                if event.key == pygame.K_w:
+                    self.player2.jumping_frame = 80
+                    self.player2.jump_count +=1
             elif event.type == pygame.KEYUP:
                 self.player1.moving_right = False
                 self.player1.moving_left = False
+                self.player2.moving_right = False
+                self.player2.moving_left = False
 
+    def check_collision_with_player(self):
+        if self.player1.rect.collidepoint(self.ball.rect.midleft):
+            self.ball.xmovement = 0.5
+            self.ball.move_rate_right = 300
+        if self.player1.rect.collidepoint(self.ball.rect.midtop):
+            self.ball.bounce_frame = 1500
+        if self.player1.rect.collidepoint(self.ball.rect.midright):
+            self.ball.xmovement = -0.5
+            self.ball.move_rate_left = 300
 
 if __name__ == "__main__":
     headsoccer = HeadSoccer()
