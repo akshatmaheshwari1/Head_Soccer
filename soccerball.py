@@ -1,5 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
+from random import randint
 
 class SoccerBall(Sprite):
     def __init__(self):
@@ -30,7 +31,7 @@ class SoccerBall(Sprite):
 
 
         if self.y > 600 - self.rect.height:
-            self.bounce_frame = 700
+            self.bounce_frame = randint(200,700)
 
         if self.bounce_frame > 0:
             self.ymovement = -.58

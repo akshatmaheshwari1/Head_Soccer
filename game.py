@@ -4,6 +4,8 @@ import sys
 import time
 from player import Player
 from soccerball import SoccerBall
+from goalpost import GoalPost
+from random import randint
 
 class HeadSoccer:
     def __init__(self):
@@ -40,6 +42,12 @@ class HeadSoccer:
         self.ball.x = 600
         self.ball.y = 100
 
+        #draw goalpost
+        self.goalpost1 = GoalPost("left")
+        self.goalpost1.rect = (0, 600-128)
+        self.goalpost2 = GoalPost("right")
+        self.goalpost2.rect = (1200-64, 600 - 128)
+
     def run_game(self):
         clock = pygame.time.Clock()
         while True:
@@ -49,6 +57,8 @@ class HeadSoccer:
             self.ball.update()
             self.update_screen()
             self.check_collision_with_player()
+            self.check_collision_with_goalpost()
+            self.check_goal()
 
         clock.tick(60)
     def draw_background(self):
@@ -65,6 +75,8 @@ class HeadSoccer:
         self.screen.blit(self.player1.image, self.player1.rect)
         self.screen.blit(self.player2.image, self.player2.rect)
         self.screen.blit(self.ball.image, self.ball.rect)
+        self.screen.blit(self.goalpost1.image, self.goalpost1.rect)
+        self.screen.blit(self.goalpost2.image, self.goalpost2.rect)
         pygame.display.flip()
 
     def _check_events(self):
@@ -95,14 +107,45 @@ class HeadSoccer:
                 self.player2.moving_left = False
 
     def check_collision_with_player(self):
-        if self.player1.rect.collidepoint(self.ball.rect.midleft):
+        if self.ball.rect.collidepoint(self.player1.rect.midright) or self.ball.rect.collidepoint(self.player1.rect.bottomright) or self.ball.rect.collidepoint(self.player1.rect.topright):
             self.ball.xmovement = 0.5
             self.ball.move_rate_right = 300
-        if self.player1.rect.collidepoint(self.ball.rect.midtop):
+        elif self.ball.rect.collidepoint(self.player1.rect.midtop):
             self.ball.bounce_frame = 1500
-        if self.player1.rect.collidepoint(self.ball.rect.midright):
+        elif self.ball.rect.collidepoint(self.player1.rect.midleft) or self.ball.rect.collidepoint(self.player1.rect.topleft) or self.ball.rect.collidepoint(self.player1.rect.bottomleft) :
             self.ball.xmovement = -0.5
             self.ball.move_rate_left = 300
+
+        if self.ball.rect.collidepoint(self.player2.rect.midright) or self.ball.rect.collidepoint(self.player2.rect.bottomright) or self.ball.rect.collidepoint(self.player2.rect.topright):
+            self.ball.xmovement = 0.5
+            self.ball.move_rate_right = 300
+        elif self.ball.rect.collidepoint(self.player2.rect.midtop):
+            self.ball.bounce_frame = 1500
+        elif self.ball.rect.collidepoint(self.player2.rect.midleft) or self.ball.rect.collidepoint(self.player2.rect.topleft) or self.ball.rect.collidepoint(self.player2.rect.bottomleft) :
+            self.ball.xmovement = -0.5
+            self.ball.move_rate_left = 300
+
+    def check_collision_with_goalpost(self):
+        if self.ball.rect.x < 64 and self.ball.rect.y > 460:
+            self.ball.bounce_frame = randint(150,400)
+        if self.ball.rect.x > 1136 and self.ball.rect.y > 460:
+            self.ball.bounce_frame = randint(150,400)
+
+    def check_goal(self):
+        if self.ball.rect.x < 64 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
+            print("GOAAAL!")
+            self.reset_game()
+
+        if self.ball.rect.x >1136 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
+            print("GOAAAL!")
+            self.reset_game()
+    def reset_game(self):
+        self.ball.x = 600
+        self.ball.y = 100
+        self.player1.x = 200
+        self.player1.y = 600 - self.player1.rect.height
+        self.player2.x = 1000
+        self.player2.y = 600 - self.player2.rect.height
 
 if __name__ == "__main__":
     headsoccer = HeadSoccer()

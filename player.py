@@ -20,9 +20,10 @@ class Player(Sprite):
         self.gravity_counter = 0
 
     def update(self):
-        if self.moving_right and self.rect.right < 1200: #moving right
+        if self.moving_right and self.rect.right < 1200-64: #moving right
             self.x += self.player_speed
-        if self.moving_left and self.rect.left > 0: #moving left
+
+        if self.moving_left and self.rect.left > 64: #moving left
             self.x -= self.player_speed
 
         if self.jumping_frame > 0 and self.jump_count < 3: #jumping
