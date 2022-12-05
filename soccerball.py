@@ -10,7 +10,7 @@ class SoccerBall(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
         self.xmovement = 0
-        self.ymovement = .58
+        self.ymovement = 7.58
         self.bounce_frame = 0
         self.move_rate_right = 0
         self.move_rate_left = 0
@@ -31,25 +31,25 @@ class SoccerBall(Sprite):
 
 
         if self.y > 600 - self.rect.height:
-            self.bounce_frame = randint(200,700)
+            self.bounce_frame = randint(40,100)
 
         if self.bounce_frame > 0:
-            self.ymovement = -.58
+            self.ymovement = -2.58
             self.bounce_frame -=1
 
         if self.bounce_frame < 1:
-            self.ymovement = 0.58
+            self.ymovement = 2.58
 
         if self.move_rate_right > 0:
             self.move_rate_right -=1
-            self.xmovement -= 0.001
+            self.xmovement -= 0.05
 
             if self.xmovement < 0:
                 self.move_rate_right = 0
 
         if self.move_rate_left > 0:
             self.move_rate_left -=1
-            self.xmovement += 0.001
+            self.xmovement += 0.05
 
             if self.xmovement > 0:
                 self.move_rate_right = 0

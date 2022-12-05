@@ -6,6 +6,7 @@ from player import Player
 from soccerball import SoccerBall
 from goalpost import GoalPost
 from random import randint
+from powerup import Powerup
 
 class HeadSoccer:
     def __init__(self):
@@ -48,8 +49,16 @@ class HeadSoccer:
         self.goalpost2 = GoalPost("right")
         self.goalpost2.rect = (1200-64, 600 - 128)
 
+        #draw powerup
+        self.powerup = Powerup()
+        self.powerup.y = -100
+        self.powerup.x = randint(100,1100)
+
+
+
     def run_game(self):
         clock = pygame.time.Clock()
+        tick = 0
         while True:
             self._check_events()
             self.player1.update()
@@ -59,8 +68,13 @@ class HeadSoccer:
             self.check_collision_with_player()
             self.check_collision_with_goalpost()
             self.check_goal()
-
-        clock.tick(60)
+            self.powerup.update()
+            self.check_powerup(tick)
+            self.goalpost2.update(tick)
+            self.goalpost1.update(tick)
+            clock.tick(60)
+            tick+=1
+            print(tick)
     def draw_background(self):
         for x in range(self.settings.screen_width//self.grass_rect.width + 1):
             for y in range(int(self.settings.screen_height // self.grass_rect.height * (1/3) + 1)):
@@ -77,6 +91,7 @@ class HeadSoccer:
         self.screen.blit(self.ball.image, self.ball.rect)
         self.screen.blit(self.goalpost1.image, self.goalpost1.rect)
         self.screen.blit(self.goalpost2.image, self.goalpost2.rect)
+        self.screen.blit(self.powerup.image, self.powerup.rect)
         pygame.display.flip()
 
     def _check_events(self):
@@ -90,7 +105,7 @@ class HeadSoccer:
                 if event.key == pygame.K_LEFT:
                     self.player1.moving_left = True
                 if event.key == pygame.K_UP:
-                    self.player1.jumping_frame = 80
+                    self.player1.jumping_frame = 20
                     self.player1.jump_count +=1
                 #player2
                 if event.key == pygame.K_d:
@@ -98,7 +113,7 @@ class HeadSoccer:
                 if event.key == pygame.K_a:
                     self.player2.moving_left = True
                 if event.key == pygame.K_w:
-                    self.player2.jumping_frame = 80
+                    self.player2.jumping_frame = 20
                     self.player2.jump_count +=1
             elif event.type == pygame.KEYUP:
                 self.player1.moving_right = False
@@ -107,31 +122,55 @@ class HeadSoccer:
                 self.player2.moving_left = False
 
     def check_collision_with_player(self):
-        if self.ball.rect.collidepoint(self.player1.rect.midright) or self.ball.rect.collidepoint(self.player1.rect.bottomright) or self.ball.rect.collidepoint(self.player1.rect.topright):
-            self.ball.xmovement = 0.5
-            self.ball.move_rate_right = 300
-        elif self.ball.rect.collidepoint(self.player1.rect.midtop):
-            self.ball.bounce_frame = 1500
-        elif self.ball.rect.collidepoint(self.player1.rect.midleft) or self.ball.rect.collidepoint(self.player1.rect.topleft) or self.ball.rect.collidepoint(self.player1.rect.bottomleft) :
-            self.ball.xmovement = -0.5
-            self.ball.move_rate_left = 300
-
-        if self.ball.rect.collidepoint(self.player2.rect.midright) or self.ball.rect.collidepoint(self.player2.rect.bottomright) or self.ball.rect.collidepoint(self.player2.rect.topright):
-            self.ball.xmovement = 0.5
-            self.ball.move_rate_right = 300
-        elif self.ball.rect.collidepoint(self.player2.rect.midtop):
-            self.ball.bounce_frame = 1500
-        elif self.ball.rect.collidepoint(self.player2.rect.midleft) or self.ball.rect.collidepoint(self.player2.rect.topleft) or self.ball.rect.collidepoint(self.player2.rect.bottomleft) :
-            self.ball.xmovement = -0.5
-            self.ball.move_rate_left = 300
+        if self.ball.rect.colliderect(self.player1.rect):
+            if abs(self.ball.rect.left - self.player1.rect.right) < 15:
+                self.ball.xmovement = abs(self.ball.xmovement)
+                self.ball.xmovement += 2
+                self.ball.move_rate_right = 20
+            if abs(self.ball.rect.bottom - self.player1.rect.top) < 10:
+                self.ball.bounce_frame = randint(100, 200)
+            if abs(self.ball.rect.right - self.player1.rect.left) < 15:
+                self.ball.xmovement = - abs(self.ball.xmovement)
+                self.ball.xmovement += -2
+                self.ball.move_rate_left = 20
+            if abs(self.ball.rect.top - self.player1.rect.bottom) < 10:
+                self.ball.ymovement *= -1
+        if self.ball.rect.colliderect(self.player2.rect):
+            if abs(self.ball.rect.left - self.player2.rect.right) < 15:
+                self.ball.xmovement = abs(self.ball.xmovement)
+                self.ball.xmovement += 2
+                self.ball.move_rate_right = 20
+            if abs(self.ball.rect.bottom - self.player2.rect.top) < 10:
+                self.ball.bounce_frame = randint(100, 200)
+            if abs(self.ball.rect.right - self.player2.rect.left) < 15:
+                self.ball.xmovement = - abs(self.ball.xmovement)
+                self.ball.xmovement += -2
+                self.ball.move_rate_left = 20
+            if abs(self.ball.rect.top - self.player2.rect.bottom) < 10:
+                self.ball.ymovement *= -1
 
     def check_collision_with_goalpost(self):
+        if self.goalpost2.big:
+            if self.ball.rect.x > 1136 and self.ball.rect.y > 400:
+                self.ball.bounce_frame = randint(30, 100)
+        if self.goalpost1.big:
+            if self.ball.rect.x < 64 and self.ball.rect.y > 400:
+                self.ball.bounce_frame = randint(30, 100)
+
         if self.ball.rect.x < 64 and self.ball.rect.y > 460:
-            self.ball.bounce_frame = randint(150,400)
+            self.ball.bounce_frame = randint(30,100)
         if self.ball.rect.x > 1136 and self.ball.rect.y > 460:
-            self.ball.bounce_frame = randint(150,400)
+            self.ball.bounce_frame = randint(30,100)
 
     def check_goal(self):
+        if self.goalpost2.big:
+            if self.ball.rect.x > 1136 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
+                print("GOAAAL!")
+                self.reset_game()
+        if self.goalpost1.big:
+            if self.ball.rect.x < 64 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
+                print("GOAAAL!")
+                self.reset_game()
         if self.ball.rect.x < 64 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
             print("GOAAAL!")
             self.reset_game()
@@ -146,6 +185,20 @@ class HeadSoccer:
         self.player1.y = 600 - self.player1.rect.height
         self.player2.x = 1000
         self.player2.y = 600 - self.player2.rect.height
+        self.ball.xmovement = 0
+
+    def check_powerup(self, tick):
+        if self.powerup.rect.collidepoint(self.player1.rect.midtop):
+            print("Oh no!")
+            self.goalpost2.change_goal(tick)
+            self.powerup.y = -6000
+
+        if self.powerup.rect.collidepoint(self.player2.rect.midtop):
+            print("Oh no!")
+            self.goalpost1.change_goal(tick)
+            self.powerup.y = -6000
+
+
 
 if __name__ == "__main__":
     headsoccer = HeadSoccer()

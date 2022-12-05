@@ -10,7 +10,7 @@ class Player(Sprite):
         self.rect = self.image.get_rect()
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-        self.player_speed = 2
+        self.player_speed = 5
 
         self.moving_right = False
         self.moving_left = False
@@ -27,7 +27,7 @@ class Player(Sprite):
             self.x -= self.player_speed
 
         if self.jumping_frame > 0 and self.jump_count < 3: #jumping
-            self.y -= 1
+            self.y -= 3
             self.jumping_frame -=1
         elif self.y < 600 - self.image.get_height():
             self.gravity_counter +=1
@@ -35,6 +35,7 @@ class Player(Sprite):
         if self.y > 599 - self.image.get_height():
             self.jump_count = 0
             self.gravity_counter = 0
+            self.y = 600 - self.image.get_height()
 
         self.rect.x = self.x
         self.rect.y = self.y
