@@ -54,7 +54,20 @@ class HeadSoccer:
         self.powerup.y = -100
         self.powerup.x = randint(100,1100)
 
+        self.font = pygame.font.Font('freesansbold.ttf', 32)
+        self.player1score = 0
+        self.player2score = 0
 
+        self.white = (255, 255, 255)
+        self.black = (0,0,0)
+
+        self.player1text = self.font.render(str(self.player1score), True, self.white)
+        self.player1text_rect = self.player1text.get_rect()
+        self.player1text_rect.center = (50, 50)
+
+        self.player2text = self.font.render(str(self.player2score), True, self.white)
+        self.player2text_rect = self.player2text.get_rect()
+        self.player2text_rect.center = (1150, 50)
 
     def run_game(self):
         clock = pygame.time.Clock()
@@ -74,7 +87,6 @@ class HeadSoccer:
             self.goalpost1.update(tick)
             clock.tick(60)
             tick+=1
-            print(tick)
     def draw_background(self):
         for x in range(self.settings.screen_width//self.grass_rect.width + 1):
             for y in range(int(self.settings.screen_height // self.grass_rect.height * (1/3) + 1)):
@@ -84,6 +96,7 @@ class HeadSoccer:
             for y in range(int(self.settings.screen_height // self.sky_rect.height * (2 / 3) + 1)):
                 self.screen.blit(self.sky_tile, (x * self.sky_rect.width, y * self.sky_rect.height))
 
+
     def update_screen(self):
         self.draw_background()
         self.screen.blit(self.player1.image, self.player1.rect)
@@ -92,6 +105,8 @@ class HeadSoccer:
         self.screen.blit(self.goalpost1.image, self.goalpost1.rect)
         self.screen.blit(self.goalpost2.image, self.goalpost2.rect)
         self.screen.blit(self.powerup.image, self.powerup.rect)
+        self.screen.blit(self.player1text, self.player1text_rect)
+        self.screen.blit(self.player2text, self.player2text_rect)
         pygame.display.flip()
 
     def _check_events(self):
@@ -166,18 +181,25 @@ class HeadSoccer:
         if self.goalpost2.big:
             if self.ball.rect.x > 1136 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
                 print("GOAAAL!")
+                self.player1score +=1
                 self.reset_game()
         if self.goalpost1.big:
             if self.ball.rect.x < 64 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
                 print("GOAAAL!")
                 self.reset_game()
+                self.player2score += 1
         if self.ball.rect.x < 64 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
             print("GOAAAL!")
             self.reset_game()
+            self.player2score += 1
 
         if self.ball.rect.x >1136 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
             print("GOAAAL!")
             self.reset_game()
+            self.player1score += 1
+
+        self.player1text = self.font.render(str(self.player1score), True, self.white)
+        self.player2text = self.font.render(str(self.player2score), True, self.white)
     def reset_game(self):
         self.ball.x = 600
         self.ball.y = 100
@@ -188,15 +210,17 @@ class HeadSoccer:
         self.ball.xmovement = 0
 
     def check_powerup(self, tick):
-        if self.powerup.rect.collidepoint(self.player1.rect.midtop):
+        if self.powerup.rect.colliderect(self.player1.rect):
             print("Oh no!")
             self.goalpost2.change_goal(tick)
             self.powerup.y = -6000
+            self.powerup.x = randint(100,1100)
 
-        if self.powerup.rect.collidepoint(self.player2.rect.midtop):
+        if self.powerup.rect.colliderect(self.player2.rect):
             print("Oh no!")
             self.goalpost1.change_goal(tick)
             self.powerup.y = -6000
+            self.powerup.x = randint(100, 1100)
 
 
 

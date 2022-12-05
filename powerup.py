@@ -1,6 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
-from goalpost import GoalPost
+from random import randint
 
 class Powerup(Sprite):
     def __init__(self):
@@ -16,5 +16,6 @@ class Powerup(Sprite):
 
         if self.y >= 600:
             self.y = -3000
+            self.x = randint(100,1100)
 
 
