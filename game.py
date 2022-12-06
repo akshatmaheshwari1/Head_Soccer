@@ -69,24 +69,33 @@ class HeadSoccer:
         self.player2text_rect = self.player2text.get_rect()
         self.player2text_rect.center = (1150, 50)
 
+        self.endgame = False
+
     def run_game(self):
         clock = pygame.time.Clock()
         tick = 0
         while True:
-            self._check_events()
-            self.player1.update()
-            self.player2.update()
-            self.ball.update()
-            self.update_screen()
-            self.check_collision_with_player()
-            self.check_collision_with_goalpost()
-            self.check_goal()
-            self.powerup.update()
-            self.check_powerup(tick)
-            self.goalpost2.update(tick)
-            self.goalpost1.update(tick)
+            while not self.endgame:
+                self._check_events()
+                self.player1.update()
+                self.player2.update()
+                self.ball.update()
+                self.update_screen()
+                self.check_collision_with_player()
+                self.check_collision_with_goalpost()
+                self.check_goal()
+                self.powerup.update()
+                self.check_powerup(tick)
+                self.goalpost2.update(tick)
+                self.goalpost1.update(tick)
+                clock.tick(60)
+                tick+=1
+                if self.player1score == 5 or self.player2score == 5:
+                    self.endgame = True
             clock.tick(60)
-            tick+=1
+            self.draw_second_background()
+            self.display_winner()
+
     def draw_background(self):
         for x in range(self.settings.screen_width//self.grass_rect.width + 1):
             for y in range(int(self.settings.screen_height // self.grass_rect.height * (1/3) + 1)):
@@ -113,24 +122,24 @@ class HeadSoccer:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 #player1
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_d:
                     self.player1.moving_right = True
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_a:
                     self.player1.moving_left = True
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_w:
                     self.player1.jumping_frame = 20
                     self.player1.jump_count +=1
                 #player2
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_RIGHT:
                     self.player2.moving_right = True
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_LEFT:
                     self.player2.moving_left = True
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_UP:
                     self.player2.jumping_frame = 20
                     self.player2.jump_count +=1
-            elif event.type == pygame.KEYUP:
+            if event.type == pygame.KEYUP:
                 self.player1.moving_right = False
                 self.player1.moving_left = False
                 self.player2.moving_right = False
@@ -221,8 +230,21 @@ class HeadSoccer:
             self.goalpost1.change_goal(tick)
             self.powerup.y = -6000
             self.powerup.x = randint(100, 1100)
+    def draw_second_background(self):
+        for x in range(self.settings.screen_width // self.sky_rect.width + 1):
+            for y in range(int(self.settings.screen_height // self.sky_rect.height + 1)):
+                self.screen.blit(self.sky_tile, (x * self.sky_rect.width, y * self.sky_rect.height))
 
-
+    def display_winner(self):
+        self.font = pygame.font.Font('freesansbold.ttf', 100)
+        if self.player1score == 5:
+            self.wintext = self.font.render("Player 1 Wins!", True, self.white)
+        else:
+            self.wintext = self.font.render("Player 2 Wins!", True, self.white)
+        self.wintext_rect = self.player1text.get_rect()
+        self.wintext_rect.center = (250, 300)
+        self.screen.blit(self.wintext, self.wintext_rect)
+        pygame.display.flip()
 
 if __name__ == "__main__":
     headsoccer = HeadSoccer()
