@@ -10,5 +10,7 @@
     * Powerups will fall that can give your opponent a disadvantage
 
 ## Credits
-    * Nolan - 
+    * Nolan Filby - For helping with adding multiple sized goalposts to the screen
+    * Riley Haugen - For helping with the collision between the ball and the players
+    
 

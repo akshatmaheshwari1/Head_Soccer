@@ -26,13 +26,13 @@ class Player(Sprite):
         if self.moving_left and self.rect.left > 64: #moving left
             self.x -= self.player_speed
 
-        if self.jumping_frame > 0 and self.jump_count < 3: #jumping
+        if self.jumping_frame > 0 and self.jump_count < 3: #only lets you jump twice
             self.y -= 3
             self.jumping_frame -=1
-        elif self.y < 600 - self.image.get_height():
+        elif self.y < 600 - self.image.get_height(): #gravity acts as a factor that makes the player fall back down faster and faster
             self.gravity_counter +=1
             self.y += 1.08 ** self.gravity_counter
-        if self.y > 599 - self.image.get_height():
+        if self.y > 599 - self.image.get_height(): #once it reaches the bottom, all those values reset to 0
             self.jump_count = 0
             self.gravity_counter = 0
             self.y = 600 - self.image.get_height()
