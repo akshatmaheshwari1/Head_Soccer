@@ -7,6 +7,8 @@ from soccerball import SoccerBall
 from goalpost import GoalPost
 from random import randint
 from powerup import Powerup
+from pygame import mixer
+
 
 class HeadSoccer:
     def __init__(self):
@@ -71,6 +73,12 @@ class HeadSoccer:
 
         self.endgame = False
 
+        #sounds
+        mixer.init()
+        mixer.music.load("Assets/goal.wav")
+        mixer.music.set_volume(0.7)
+
+
     def run_game(self):
         clock = pygame.time.Clock()
         tick = 0
@@ -95,6 +103,8 @@ class HeadSoccer:
             clock.tick(60)
             self.draw_second_background()
             self.display_winner()
+            time.sleep(3)
+            sys.exit()
 
     def draw_background(self):
         for x in range(self.settings.screen_width//self.grass_rect.width + 1):
@@ -124,21 +134,21 @@ class HeadSoccer:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 #player1
+                if event.key == pygame.K_w:
+                    self.player1.jumping_frame = 20
+                    self.player1.jump_count +=1
                 if event.key == pygame.K_d:
                     self.player1.moving_right = True
                 if event.key == pygame.K_a:
                     self.player1.moving_left = True
-                if event.key == pygame.K_w:
-                    self.player1.jumping_frame = 20
-                    self.player1.jump_count +=1
                 #player2
+                if event.key == pygame.K_UP:
+                    self.player2.jumping_frame = 20
+                    self.player2.jump_count +=1
                 if event.key == pygame.K_RIGHT:
                     self.player2.moving_right = True
                 if event.key == pygame.K_LEFT:
                     self.player2.moving_left = True
-                if event.key == pygame.K_UP:
-                    self.player2.jumping_frame = 20
-                    self.player2.jump_count +=1
             if event.type == pygame.KEYUP:
                 self.player1.moving_right = False
                 self.player1.moving_left = False
@@ -190,20 +200,24 @@ class HeadSoccer:
         if self.goalpost2.big:
             if self.ball.rect.x > 1136 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
                 print("GOAAAL!")
+                mixer.music.play()
                 self.player1score +=1
                 self.reset_game()
         if self.goalpost1.big:
             if self.ball.rect.x < 64 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
                 print("GOAAAL!")
+                mixer.music.play()
                 self.reset_game()
                 self.player2score += 1
         if self.ball.rect.x < 64 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
             print("GOAAAL!")
+            mixer.music.play()
             self.reset_game()
             self.player2score += 1
 
         if self.ball.rect.x >1136 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
             print("GOAAAL!")
+            mixer.music.play()
             self.reset_game()
             self.player1score += 1
 

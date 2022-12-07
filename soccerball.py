@@ -42,14 +42,14 @@ class SoccerBall(Sprite):
 
         if self.move_rate_right > 0:
             self.move_rate_right -=1
-            self.xmovement -= 0.05
+            self.xmovement -= 0.1
 
             if self.xmovement < 0:
                 self.move_rate_right = 0
 
         if self.move_rate_left > 0:
             self.move_rate_left -=1
-            self.xmovement += 0.05
+            self.xmovement += 0.1
 
             if self.xmovement > 0:
                 self.move_rate_right = 0
