@@ -1,6 +1,5 @@
 import pygame
 from pygame.sprite import Sprite
-from settings import Settings
 
 class Player(Sprite):
     def __init__(self, number, image): #characteristic for player number and player image
