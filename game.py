@@ -73,10 +73,9 @@ class HeadSoccer:
 
         #sounds
         mixer.init()
-        mixer.music.load("Assets/goal.wav")
         mixer.music.set_volume(0.7)
-
-
+        mixer.music.load("Assets/waka.wav")
+        mixer.music.play(-1)
     def run_game(self):
         clock = pygame.time.Clock()
         tick = 0
@@ -203,21 +202,29 @@ class HeadSoccer:
     def check_goal(self):
         if self.goalpost2.big: #settings to check if ball scored in big goal
             if self.ball.rect.x > 1136 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
-                mixer.music.play()
+                mixer.music.pause()
+                mixer.Sound.play(mixer.Sound("Assets/goal.wav"))
+                mixer.music.unpause()
                 self.player1score +=1
                 self.reset_game()
         if self.goalpost1.big:
             if self.ball.rect.x < 64 and self.ball.rect.y > 410 and self.ball.rect.y < 600:
-                mixer.music.play()
+                mixer.music.pause()
+                mixer.Sound.play(mixer.Sound("Assets/goal.wav"))
+                mixer.music.unpause()
                 self.reset_game()
                 self.player2score += 1
         if self.ball.rect.x < 64 and self.ball.rect.y > 480 and self.ball.rect.y < 600: #settings to check if ball scored in normal goal
-            mixer.music.play()
+            mixer.music.pause()
+            mixer.Sound.play(mixer.Sound("Assets/goal.wav"))
+            mixer.music.unpause()
             self.reset_game()
             self.player2score += 1
 
         if self.ball.rect.x >1136 and self.ball.rect.y > 480 and self.ball.rect.y < 600:
-            mixer.music.play()
+            mixer.music.pause()
+            mixer.Sound.play(mixer.Sound("Assets/goal.wav"))
+            mixer.music.unpause()
             self.reset_game()
             self.player1score += 1
 
